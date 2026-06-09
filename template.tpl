@@ -15,7 +15,10 @@ ___INFO___
   "securityGroups": [],
   "displayName": "Dynamic UTM Resolver",
   "description": "Fix missing or incorrect UTMs based on Referrers or Query Parameters. Includes advanced rule mapping, dynamic RegEx extraction, default fallbacks, and automatic lowercase formatting.",
-  "categories": ["ANALYTICS", "UTILITY"],
+  "categories": [
+    "ANALYTICS",
+    "UTILITY"
+  ],
   "containerContexts": [
     "SERVER"
   ]
@@ -29,7 +32,7 @@ ___TEMPLATE_PARAMETERS___
     "type": "GROUP",
     "name": "advancedSettingsGroup",
     "displayName": "Input Settings",
-    "groupStyle": "ZIPPY_CLOSED",
+    "groupStyle": "ZIPPY_OPEN_ON_PARAM",
     "subParams": [
       {
         "type": "TEXT",
@@ -46,6 +49,18 @@ ___TEMPLATE_PARAMETERS___
         "simpleValueType": true,
         "defaultValue": "page_referrer",
         "help": "The Event Data key containing the referring URL. Leave as \u003cstrong\u003epage_referrer\u003c/strong\u003e for standard GA4/sGTM setups."
+      },
+      {
+        "type": "TEXT",
+        "name": "internal_domain",
+        "displayName": "Internal Domain",
+        "simpleValueType": true,
+        "help": "Your website\u0027s root domain (e.g., \"domain.com\"). Used to verify if traffic is arriving from outside the site.",
+        "valueValidators": [
+          {
+            "type": "NON_EMPTY"
+          }
+        ]
       }
     ]
   },
@@ -234,6 +249,22 @@ ___TEMPLATE_PARAMETERS___
           "help": "If using Regex Extraction, use \u003cstrong\u003e$1\u003c/strong\u003e to output your captured group."
         },
         "isUnique": false
+      },
+      {
+        "param": {
+          "type": "CHECKBOX",
+          "name": "require_external",
+          "checkboxText": "Require External Referrer",
+          "simpleValueType": true,
+          "enablingConditions": [
+            {
+              "paramName": "source",
+              "paramValue": "referrer",
+              "type": "NOT_EQUALS"
+            }
+          ]
+        },
+        "isUnique": false
       }
     ],
     "help": "Define your UTM creation rules here. The template evaluates rows from top to bottom and stops at the first match. If matching a Referrer, remember that only the domain portion is typically available."
@@ -310,6 +341,17 @@ if (currentUtm && data.behavior !== 'override') {
         const matchRegex = createRegex(rule.match_value);
         if (matchRegex && evaluateValue.search(matchRegex) !== -1) {
             isMatch = true;
+        }
+      }
+
+      // If a match was found, check if we need to verify the referrer
+      const internalDomain = data.internal_domain ? makeString(data.internal_domain).toLowerCase() : '';
+      
+      if (isMatch && rule.require_external && internalDomain) {
+        const refLower = pageReferrer.toLowerCase();
+        // If the referrer contains our own domain, this is internal navigation
+        if (refLower.indexOf(internalDomain) !== -1) {
+            isMatch = false;
         }
       }
 

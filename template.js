@@ -54,6 +54,17 @@ if (currentUtm && data.behavior !== 'override') {
         }
       }
 
+      // If a match was found, check if we need to verify the referrer
+      const internalDomain = data.internal_domain ? makeString(data.internal_domain).toLowerCase() : '';
+      
+      if (isMatch && rule.require_external && internalDomain) {
+        const refLower = pageReferrer.toLowerCase();
+        // If the referrer contains our own domain, this is internal navigation
+        if (refLower.indexOf(internalDomain) !== -1) {
+            isMatch = false;
+        }
+      }
+
       if (isMatch) {
         if (rule.output_type === 'regex_extract') {
             const extractionRegex = createRegex(rule.match_value);
