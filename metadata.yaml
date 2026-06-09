@@ -1,0 +1,7 @@
+homepage: "https://github.com/gtm-templates-knowit-experience/"
+documentation: "https://github.com/gtm-templates-knowit-experience/sgtm-dynamic-utm-resolver"
+versions:
+  # Latest version
+  - sha: 2125d46d094b107c2a5f739e47aec76fcae92b3a
+    changeNotes: Inital release.
+
