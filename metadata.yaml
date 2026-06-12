@@ -2,6 +2,8 @@ homepage: "https://github.com/gtm-templates-knowit-experience/"
 documentation: "https://github.com/gtm-templates-knowit-experience/sgtm-dynamic-utm-resolver"
 versions:
   # Latest version
+  - sha: 3126b8a7c75a6e65bcc27fee8a1cb782915d5347
+    changeNotes: Added Require External Referrer setting.
+  # Older versions
   - sha: 2125d46d094b107c2a5f739e47aec76fcae92b3a
     changeNotes: Inital release.
-
