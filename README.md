@@ -36,7 +36,7 @@ The template evaluates rules from top to bottom and stops at the first match.
 * **Output Type:** Choose `Static Text` or `Regex Extraction`. 
 * **Output Value:** The value to return. If using Regex Extraction, use capture groups like `$1`.
 
-### 3. Apply via sGTM Transformation (Recommended)
+### 3. Apply Campaign via sGTM Transformation (Recommended)
 To apply your resolved UTMs to GA4 (and any other tags), map them using an **Augment Event** Transformation.
 
 **Important:** When sending campaign parameters via sGTM Event Data, you must use the `campaign_` prefix instead of `utm_`.
@@ -51,11 +51,9 @@ Create an Augment Event Transformation with the following parameters:
 
 ---
 
-## 🛠 Advanced: Handling Extended UTMs (Platform, Format, Tactic)
+## 4. Apply UTM via Page Location rewrite and sGTM Transformation
 
-Currently, the standard GA4 sGTM tag does not automatically map the newer extended UTM parameters (`utm_source_platform`, `utm_creative_format`, `utm_marketing_tactic`) from standard Event Data into the internal campaign fields. Sending them as standard parameters results in them being treated as custom event parameters (`ep.`).
-
-**The Solution:** You must inject these directly into the `page_location` URL string before the GA4 tag fires. GA4's backend natively parses all UTMs directly from the URL.
+It's also possible to rewrite **Page Location**, and add resolved UTM's as parameters to the URL.
 
 ### Setup using the Stape URL Builder
 Rather than building a custom script, you can use the community-trusted [Stape URL Builder Variable Template](https://github.com/stape-io/url-builder-variable).
@@ -63,7 +61,7 @@ Rather than building a custom script, you can use the community-trusted [Stape U
 1. Add the Stape URL Builder template to your workspace.
 2. Create a new Stape URL Builder variable.
 3. Set the **Base URL** to the native `page_location` event data variable.
-4. Under **Queries**, add your extended UTMs. Set the Query Name to the exact UTM key (e.g., `utm_source_platform`) and the Value to your Dynamic UTM Resolver variable.
+4. Under **Queries**, add your extended UTMs. Set the Query Name to the exact UTM key (e.g., `utm_source`) and the Value to your Dynamic UTM Resolver variable.
 
 <img src="Images/sgtm-dynamic-utm-resolver-url-builder.png" alt="Dynamic UTM Resolver - SGTM URL Builder" />
 
